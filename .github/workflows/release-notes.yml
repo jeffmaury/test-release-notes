@@ -1,0 +1,23 @@
+name: Generate release notes
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Simple conventional changelog
+        uses: jeffmaury/simple-conventional-changelog@37f666fe4dba9ca46b6ce4c6c17353ec27d6ebf8
+        id: releaseNotes
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          types-mapping: 'feat:Features,fix:Bug Fixes,docs:Documentation,refactor:Refactoring,chore:Other'
+          release-notes: true
+      - run: |
+          echo "${{ steps.releaseNotes.outputs.releasenotes }}"
+      - run: |
+          echo "${{ steps.releaseNotes.outputs.releasenotes }}" > release-notes.md
+      - uses: actions/upload-artifact@v3
+        with:
+          name: release-notes.md
+          path: release-notes.md
